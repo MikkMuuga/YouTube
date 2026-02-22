@@ -1,13 +1,15 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
+const db = require('../db')
 
+router.get('/videos', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM videos')
+  res.json(rows)
+})
 
-router.get('/hello', (req, res) => {
-  res.json({ msg: 'hello from backend' });
-});
+router.get('/videos/:id', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM videos WHERE id = ?', [req.params.id])
+  res.json(rows[0])
+})
 
-router.post('/echo', (req, res) => {
-  res.json({ body: req.body });
-});
-
-module.exports = router;
+module.exports = router
