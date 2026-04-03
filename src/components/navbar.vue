@@ -88,9 +88,3 @@ const handleSearch = () => {
     </div>
   </nav>
 </template>
-
-<style scoped>
-input::-webkit-search-cancel-button {
-  display: none;
-}
-</style>
