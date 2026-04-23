@@ -10,8 +10,8 @@ defineEmits(['close'])
 const activeItem = ref('Home')
 
 const mainItems = [
-  { icon: 'home', label: 'Avaleht' },
-  { icon: 'shorts', label: 'Shorts' },
+  { icon: 'home', label: 'Avaleht', route: '/' },
+  { icon: 'shorts', label: 'Shorts', route: '/shorts' },
 ]
 
 const subscriptions = [
@@ -56,13 +56,14 @@ const getIcon = (name) => {
 
 <template>
   <aside
-    class="fixed left-0 top-14 h-[calc(100vh-56px)] w-60 bg-[#0f0f0f] text-white z-40 overflow-y-auto custom-scrollbar transition-transform md:translate-x-0"
+    class="fixed left-0 top-14 h-[calc(100vh-56px)] w-60 bg-[#0f0f0f] text-white z-40 overflow-y-auto custom-scrollbar transition-transform"
     :class="{ '-translate-x-full': !isOpen }"
   >
     <div class="px-3 py-3 space-y-1">
-      <button
+      <router-link
         v-for="item in mainItems"
         :key="item.label"
+        :to="item.route"
         @click="activeItem = item.label"
         :class="[
           'w-full flex items-center gap-6 px-3 py-2.5 rounded-xl transition-colors text-sm font-medium',
@@ -73,7 +74,7 @@ const getIcon = (name) => {
           <path :d="getIcon(item.icon)" />
         </svg>
         {{ item.label }}
-      </button>
+      </router-link>
 
       <div class="border-t border-white/10 my-3"></div>
 

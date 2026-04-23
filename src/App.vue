@@ -9,8 +9,11 @@ const sidebarOpen = ref(false)
 <template>
   <Navbar :sidebarOpen="sidebarOpen" @toggleSidebar="sidebarOpen = !sidebarOpen" />
   <Sidebar :isOpen="sidebarOpen" @close="sidebarOpen = false" />
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  </div>
+  <main class="pt-14 pl-0 md:pl-0 bg-black min-h-screen">
+    <div class="p-4 max-w-7xl mx-auto">
+      <router-view />
+    </div>
+  </main>
 </template>
 
 <style scoped></style>
