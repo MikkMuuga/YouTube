@@ -1,15 +1,29 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../db')
+const pool = require('../db')
 
-router.get('/videos', async (req, res) => {
-  const [rows] = await db.query('SELECT * FROM videos')
-  res.json(rows)
-})
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM videos')
 
-router.get('/videos/:id', async (req, res) => {
-  const [rows] = await db.query('SELECT * FROM videos WHERE id = ?', [req.params.id])
-  res.json(rows[0])
+    const videos = rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      channel: row.channel,
+      channelAvatar: row.channel_avatar,
+      thumbnail: row.thumbnail,
+      duration: row.duration,
+      views: row.views,
+      uploadedAt: row.uploaded_at,
+      subscribers: row.subscribers,
+      description: row.description,
+    }))
+
+    res.json(videos)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Andmebaasi viga' })
+  }
 })
 
 module.exports = router

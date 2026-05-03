@@ -1,0 +1,226 @@
+<template>
+  <div class="flex flex-col xl:flex-row gap-6">
+
+    <div class="flex-1 min-w-0">
+
+      <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden group/player">
+        <div class="w-full h-full flex flex-col items-center justify-center bg-[#111]">
+          <img
+            :src="video.thumbnail"
+            :alt="video.title"
+            class="absolute inset-0 w-full h-full object-cover opacity-30"
+          />
+          <div class="relative z-10 flex flex-col items-center gap-3">
+            <button
+              class="btn btn-circle btn-lg bg-black/60 border-0 hover:bg-black/80 transition-transform hover:scale-110"
+              @click="playing = !playing"
+            >
+              <svg v-if="!playing" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <span class="text-white/60 text-sm">{{ playing ? 'Mängib...' : 'Vajuta play' }}</span>
+          </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-8 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity">
+          <div class="w-full h-1 bg-white/30 rounded-full mb-3 cursor-pointer" @click="$emit('toast', 'Edasta video!')">
+            <div class="h-full bg-red-500 rounded-full transition-all" :style="{ width: playing ? '35%' : '0%' }"></div>
+          </div>
+          <div class="flex items-center gap-3 text-white text-xs">
+            <button @click="playing = !playing">
+              <svg v-if="!playing" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <span class="tabular-nums">{{ playing ? '4:22' : '0:00' }} / {{ video.duration }}</span>
+            <div class="ml-auto flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+              <div class="w-16 h-1 bg-white/30 rounded-full"><div class="h-full w-3/4 bg-white rounded-full"></div></div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white cursor-pointer" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="text-lg font-bold mt-4 mb-3 leading-snug text-white">{{ video.title }}</h1>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
+        <div class="flex items-center gap-3">
+          <img :src="video.channelAvatar" :alt="video.channel" class="w-10 h-10 rounded-full shrink-0" />
+          <div class="leading-tight">
+            <p class="font-semibold text-sm text-white">{{ video.channel }}</p>
+            <p class="text-xs text-gray-400">{{ video.subscribers }} tellijat</p>
+          </div>
+
+          <button
+            class="btn btn-sm rounded-full ml-1 transition-all"
+            :class="subscribed ? 'btn-ghost border border-white/20 text-white' : 'bg-white text-black hover:bg-white/90'"
+            @click="subscribed = !subscribed"
+          >
+            {{ subscribed ? 'Tellitud' : 'Telli' }}
+          </button>
+
+          <div v-if="subscribed" class="dropdown dropdown-bottom">
+            <label tabindex="0" class="btn btn-sm btn-ghost btn-circle text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              </svg>
+            </label>
+            <ul tabindex="0" class="dropdown-content menu menu-sm bg-[#282828] text-white rounded-box z-50 w-48 p-2 shadow-xl mt-1">
+              <li v-for="opt in notifOptions" :key="opt.value">
+                <a class="gap-2" :class="notifPref === opt.value ? 'bg-white/10' : ''" @click="notifPref = opt.value">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" :d="opt.icon"/>
+                  </svg>
+                  {{ opt.label }}
+                  <svg v-if="notifPref === opt.value" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+
+          <div class="join rounded-full overflow-hidden">
+            <button
+              class="btn btn-sm join-item gap-1.5 border border-white/20 text-white hover:bg-white/10 transition-colors"
+              :class="liked ? 'bg-white/20' : 'bg-transparent'"
+              @click="$emit('toggleLike')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" :fill="liked ? 'white' : 'none'" viewBox="0 0 24 24" stroke="white" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/>
+              </svg>
+              {{ video.views.split(' ')[0] }}
+            </button>
+            <button
+              class="btn btn-sm join-item border border-white/20 border-l-white/10 text-white hover:bg-white/10 transition-colors"
+              :class="disliked ? 'bg-white/20' : 'bg-transparent'"
+              @click="$emit('toggleDislike')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 rotate-180" :fill="disliked ? 'white' : 'none'" viewBox="0 0 24 24" stroke="white" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/>
+              </svg>
+            </button>
+          </div>
+
+          <button class="btn btn-sm btn-ghost border border-white/20 rounded-full gap-1.5 text-white hover:bg-white/10" @click="$emit('toast', 'Link kopeeritud!')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+            Jagamine
+          </button>
+
+          <button
+            class="btn btn-sm btn-ghost border border-white/20 rounded-full gap-1.5 text-white hover:bg-white/10 transition-colors"
+            :class="saved ? 'bg-white/20' : ''"
+            @click="saved = !saved"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" :fill="saved ? 'white' : 'none'" viewBox="0 0 24 24" stroke="white" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+            </svg>
+            Salvesta
+          </button>
+
+          <button class="btn btn-sm btn-ghost border border-white/20 rounded-full gap-1.5 text-white hover:bg-white/10" @click="$emit('toast', 'Aitäh saadetud! 💖')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            Aitäh
+          </button>
+
+          <button class="btn btn-sm btn-ghost border border-white/20 rounded-full gap-1.5 text-white hover:bg-white/10" @click="$emit('toast', 'Allalaadimine algas...')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Allalaadimine
+          </button>
+
+        </div>
+      </div>
+
+      <div
+        class="mt-4 bg-[#272727] rounded-xl p-4 text-sm text-gray-300 cursor-pointer select-none"
+        @click="descExpanded = !descExpanded"
+      >
+        <div class="flex items-center gap-2 font-semibold text-white mb-1">
+          <span>{{ video.views }}</span>
+          <span class="text-gray-500">·</span>
+          <span>{{ video.uploadedAt }}</span>
+        </div>
+        <p :class="descExpanded ? '' : 'line-clamp-2'" class="text-gray-400">
+          {{ video.description || 'Kirjeldus puudub.' }}
+        </p>
+        <span class="text-xs font-bold mt-2 block text-white">
+          {{ descExpanded ? 'Näita vähem' : 'Näita rohkem' }}
+        </span>
+      </div>
+
+    </div>
+
+    <div class="w-full xl:w-[380px] shrink-0">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Soovitatavad</p>
+      <div class="flex flex-col gap-3">
+        <div
+          v-for="rec in recommended"
+          :key="rec.id"
+          class="flex gap-3 cursor-pointer group/rec"
+          @click="$emit('select', rec)"
+        >
+          <div class="relative shrink-0 w-40 aspect-video rounded-lg overflow-hidden bg-[#222]">
+            <img :src="rec.thumbnail" :alt="rec.title" class="w-full h-full object-cover group-hover/rec:brightness-75 transition" />
+            <span class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1 rounded">{{ rec.duration }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-white/80 line-clamp-2 leading-snug group-hover/rec:text-white transition">{{ rec.title }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ rec.channel }}</p>
+            <p class="text-xs text-gray-500">{{ rec.views }} · {{ rec.uploadedAt }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+defineProps({
+  video: {
+    type: Object,
+    required: true
+  },
+  recommended: {
+    type: Array,
+    default: () => []
+  },
+  liked: {
+    type: Boolean,
+    default: false
+  },
+  disliked: {
+    type: Boolean,
+    default: false
+  }
+})
+
+defineEmits(['select', 'toast', 'toggleLike', 'toggleDislike'])
+
+const playing = ref(false)
+const subscribed = ref(false)
+const notifPref = ref('all')
+const saved = ref(false)
+const descExpanded = ref(false)
+
+const notifOptions = [
+  { label: 'Lasku kõik', value: 'all', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
+  { label: 'Personaliseeritud', value: 'personalized', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
+  { label: 'Lülita välja', value: 'off', icon: 'M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.354 5.354l2.828 2.828.793-.793a2 2 0 00-2.828-2.828l-.793.793zm1.966 4.261l-2.828-2.828.793-.793a2 2 0 112.828 2.828l-.793.793zm4.243-1.242a2 2 0 00-2.828-2.828l-.793.793 2.828 2.828.793-.793z' }
+]
+</script>
+
+<style scoped>
+</style>
