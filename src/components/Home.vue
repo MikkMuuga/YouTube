@@ -3,6 +3,6 @@
 </template>
 
 <script setup>
-import Videogrid from './Videogrid.vue'
+import Videogrid from './VideoC/Videogrid.vue'
 </script>
 

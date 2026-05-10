@@ -4,9 +4,9 @@ import App from './App.vue'
 import './style.css'
 
 import Home from './components/Home.vue'
-import UploadVideo from './components/UploadVideo.vue'
-import StartLiveStream from './components/StartLiveStream.vue'
-import CreatePost from './components/CreatePost.vue'
+import UploadVideo from './components/FunctionalC/UploadVideo.vue'
+import StartLiveStream from './components/FunctionalC/StartLiveStream.vue'
+import CreatePost from './components/FunctionalC/CreatePost.vue'
 
 const routes = [
   { path: '/', component: Home },

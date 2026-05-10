@@ -3,6 +3,13 @@ import { ref } from 'vue'
 
 const searchQuery = ref('')
 const dropdownOpen = ref(false)
+const profileDropdownOpen = ref(false)
+
+const profile = {
+  name: 'Mikk',
+  username: '@Mikk',
+  avatar: 'https://via.placeholder.com/40'
+}
 
 defineProps({
   sidebarOpen: {
@@ -23,13 +30,22 @@ const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value
 }
 
+const toggleProfileDropdown = () => {
+  profileDropdownOpen.value = !profileDropdownOpen.value
+}
+
 const closeDropdown = () => {
   dropdownOpen.value = false
+}
+
+const closeDropdowns = () => {
+  dropdownOpen.value = false
+  profileDropdownOpen.value = false
 }
 </script>
 
 <template>
-  <nav @click="closeDropdown" class="bg-[#0f0f0f] text-white px-4 h-14 flex items-center justify-between sticky top-0 z-50">
+  <nav @click="closeDropdowns" class="bg-[#0f0f0f] text-white px-4 h-14 flex items-center justify-between sticky top-0 z-50">
     <div class="flex items-center gap-4">
       <button 
         @click="$emit('toggleSidebar')"
@@ -126,8 +142,65 @@ const closeDropdown = () => {
         </svg>
         <span class="absolute top-1 right-1 bg-red-600 text-[10px] font-bold px-1 rounded-full border-2 border-[#0f0f0f]">9+</span>
       </button>
-      <div class="ml-2 w-8 h-8 rounded-full bg-gray-600 overflow-hidden cursor-pointer">
-        <img src="https://via.placeholder.com/32" alt="Avatar" />
+      <div class="relative">
+        <button
+          @click.stop="toggleProfileDropdown"
+          class="flex items-center gap-2 hover:bg-white/10 px-3 py-1.5 rounded-full text-sm font-medium transition"
+        >
+          <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-600">
+            <img src="https://yt3.ggpht.com/IKsISsXvLhcKehITpEAR1pq3sIqLvM3G2_VwxNSqIpZxW--zA0MezTVjvqWEoVQSKNu3Jou3=s600-c-k-c0x00ffffff-no-rj-rp-mo" alt="Avatar" class="w-full h-full object-cover" />
+          </div>
+          <div class="hidden sm:flex flex-col text-left leading-tight">
+            <span class="text-sm font-semibold">{{ profile.name }}</span>
+            <span class="text-xs text-gray-400">{{ profile.username }}</span>
+          </div>
+          <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div
+          v-if="profileDropdownOpen"
+          @click.stop
+          class="absolute right-0 top-full mt-2 w-72 bg-[#181818] border border-[#303030] rounded-2xl shadow-2xl z-50 overflow-hidden text-white"
+        >
+          <div class="px-4 py-4 border-b border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-600">
+                <img src="https://yt3.ggpht.com/IKsISsXvLhcKehITpEAR1pq3sIqLvM3G2_VwxNSqIpZxW--zA0MezTVjvqWEoVQSKNu3Jou3=s600-c-k-c0x00ffffff-no-rj-rp-mo" alt="Avatar" class="w-full h-full object-cover" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold">{{ profile.name }}</p>
+                <p class="text-xs text-gray-400">{{ profile.username }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1 p-2">
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Google'i konto</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Vaheta kontot</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Logi välja</a>
+          </div>
+
+          <div class="border-t border-white/10 p-2 space-y-1">
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">YouTube Studio</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Ostud ja liikmesused</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Teie andmed YouTube'is</a>
+          </div>
+
+          <div class="border-t border-white/10 p-2 space-y-1">
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Välimus: tume</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Kuvamiskeel: eesti</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Asukoht: Eesti</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Klaviatuuri otseteed</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Seaded</a>
+          </div>
+
+          <div class="border-t border-white/10 p-2 space-y-1">
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Abi</a>
+            <a href="#" class="block rounded-xl px-4 py-2 text-sm hover:bg-white/10 transition">Tagasiside saatmine</a>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
