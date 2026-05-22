@@ -123,10 +123,10 @@
         </div>
       </div>
 
-      <div
-        class="mt-6 bg-white/5 hover:bg-white/[0.08] rounded-2xl p-4 transition-colors cursor-pointer border border-white/5"
-        @click="descExpanded = !descExpanded"
-      >
+          <div
+            class="mt-6 bg-white/5 hover:bg-white/[0.08] rounded-2xl p-4 transition-colors cursor-pointer border border-white/5"
+            @click="descExpanded = !descExpanded"
+          >
         <div class="flex items-center gap-3 font-bold text-sm mb-2 text-gray-100">
           <span>{{ video.views }} vaatamist</span>
           <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
@@ -138,6 +138,69 @@
         <button class="text-sm font-bold mt-3 text-white hover:underline transition-all">
           {{ descExpanded ? 'Näita vähem' : 'Loe edasi' }}
         </button>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="text-lg font-bold mb-4">{{ comments.length }} kommentaari</h3>
+        <div class="flex gap-3 mb-8 items-start">
+          <div class="avatar placeholder flex-shrink-0">
+            <div class="rounded-full w-10 bg-neutral text-neutral-content text-sm font-bold flex items-center justify-center">
+            </div>
+          </div>
+          <div class="flex-1">
+            <input
+              v-model="newText"
+              @focus="composeFocused = true"
+              type="text"
+              placeholder="Lisage kommentaar ..."
+              class="w-full bg-transparent border-b border-white/20 focus:border-white px-0 py-2 text-sm outline-none transition-colors"
+            />
+            <div v-if="composeFocused" class="flex justify-end gap-2 mt-3">
+              <button @click="cancelComment" class="btn btn-ghost btn-sm rounded-full">Tühista</button>
+              <button @click="postComment" :disabled="posting" class="btn btn-primary btn-sm rounded-full">
+                {{ posting ? 'Postitan...' : 'Kommenteeri' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div v-for="c in comments" :key="c.id" class="flex gap-3 items-start">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
+              :style="{ backgroundColor: avatarColor(c.author) }">
+              {{ (c.author || '?').charAt(0) }}
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2 mb-1">
+                <span class="text-sm font-medium">@{{ c.author.toLowerCase() }}</span>
+                <span class="text-xs text-gray-500">{{ timeAgo(c.createdAt) }}</span>
+              </div>
+              <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{{ c.text }}</p>
+
+              <div class="flex items-center gap-1 mt-2">
+                <button
+                  @click="toggleLike(c.id)"
+                  class="btn btn-ghost btn-xs btn-circle"
+                  :class="c.liked ? 'text-blue-400' : 'text-gray-500'"
+                >
+                  <i class="ti ti-thumb-up text-base"></i>
+                </button>
+                <span class="text-xs text-gray-500 mr-1">{{ c.likes || '' }}</span>
+                <button class="btn btn-ghost btn-xs btn-circle text-gray-500">
+                  <i class="ti ti-thumb-down text-base"></i>
+                </button>
+                <button class="btn btn-ghost btn-xs rounded-full text-sm font-medium text-gray-300 ml-1">Vasta</button>
+              </div>
+            </div>
+
+            <button class="btn btn-ghost btn-xs btn-circle text-gray-600 self-start mt-1">
+              <i class="ti ti-dots-vertical text-base"></i>
+            </button>
+          </div>
+        </div>
+
+        <p v-if="!comments.length" class="text-sm text-gray-500">Puuduvad kommentaarid.</p>
       </div>
     </div>
 
@@ -187,7 +250,7 @@
 </style>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   video: { type: Object, required: true },
@@ -221,4 +284,69 @@ const notifOptions = [
     icon: 'M6 18L18 6M6 6l12 12'
   },
 ]
+
+const comments = ref(props.video.comments ? [...props.video.comments] : [])
+const newText = ref('')
+const composeFocused = ref(false)
+const posting = ref(false)
+
+watch(() => props.video, (v) => {
+  console.log('video prop:', v?.id, 'comments:', v?.comments)
+  comments.value = v?.comments ? [...v.comments] : []
+}, { immediate: true })
+
+function avatarColor(name) {
+  const colors = ['#ef4444','#f97316','#f59e0b','#84cc16','#06b6d4','#3b82f6','#8b5cf6','#ec4899']
+  if (!name) return colors[0]
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return colors[Math.abs(hash) % colors.length]
+}
+
+function timeAgo(iso) {
+  if (!iso) return ''
+  const diff = Date.now() - new Date(iso).getTime()
+  const sec = Math.floor(diff / 1000)
+  if (sec < 10) return 'just now'
+  if (sec < 60) return `${sec}s`
+  const min = Math.floor(sec / 60)
+  if (min < 60) return `${min}m`
+  const hr = Math.floor(min / 60)
+  if (hr < 24) return `${hr}h`
+  const days = Math.floor(hr / 24)
+  return `${days}d`
+}
+
+function cancelComment() {
+  newText.value = ''
+  composeFocused.value = false
+}
+
+async function postComment() {
+  if (!newText.value.trim()) return
+  posting.value = true
+  try {
+    const res = await fetch(`http://localhost:4000/api/videos/${props.video.id}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ author: 'You', text: newText.value.trim() })
+    })
+    if (!res.ok) throw new Error('Post failed')
+    const created = await res.json()
+    comments.value.unshift(created)
+    cancelComment()
+  } catch (e) {
+    console.error(e)
+  } finally {
+    posting.value = false
+  }
+}
+
+function toggleLike(id) {
+  const c = comments.value.find(x => x.id === id)
+  if (!c) return
+  c.liked = !c.liked
+  if (c.liked) c.likes = (c.likes || 0) + 1
+  else c.likes = Math.max(0, (c.likes || 1) - 1)
+}
 </script>

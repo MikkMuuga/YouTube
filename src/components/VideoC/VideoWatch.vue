@@ -158,6 +158,66 @@
         </span>
       </div>
 
+      <div class="mt-6">
+        <h3 class="text-base font-bold mb-4 text-white">{{ comments.length }} kommentaari</h3>
+
+        <div class="flex gap-3 mb-6 items-start">
+          <div class="w-10 h-10 rounded-full bg-neutral flex items-center justify-center text-sm font-bold text-white shrink-0">Y</div>
+          <div class="flex-1">
+            <input
+              v-model="newText"
+              @focus="composeFocused = true"
+              @keydown.enter="postComment"
+              type="text"
+              placeholder="Lisage kommentaar ..."
+              class="w-full bg-transparent border-b border-white/20 focus:border-white px-0 py-2 text-sm outline-none text-white transition-colors"
+            />
+            <div v-if="composeFocused" class="flex justify-end gap-2 mt-3">
+              <button @click="cancelComment" class="btn btn-ghost btn-sm rounded-full text-white">Tühista</button>
+              <button @click="postComment" :disabled="posting" class="btn btn-primary btn-sm rounded-full">
+                {{ posting ? 'Postitan...' : 'Kommenteeri' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div v-for="c in comments" :key="c.id" class="flex gap-3 items-start">
+            <div class="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-sm font-bold text-white"
+              :style="{ backgroundColor: avatarColor(c.author) }">
+              {{ (c.author || '?').charAt(0) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2 mb-1">
+                <span class="text-sm font-medium text-white">@{{ c.author.toLowerCase() }}</span>
+                <span class="text-xs text-gray-500">{{ timeAgo(c.createdAt) }}</span>
+              </div>
+              <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{{ c.text }}</p>
+              <div class="flex items-center gap-1 mt-2">
+                <button @click="toggleLike(c.id)" class="btn btn-ghost btn-xs btn-circle" :class="c.liked ? 'text-blue-400' : 'text-gray-500'">
+                  <i class="ti ti-thumb-up text-base"></i>
+                </button>
+                <span class="text-xs text-gray-500 mr-1">{{ c.likes || '' }}</span>
+                <button class="btn btn-ghost btn-xs btn-circle text-gray-500">
+                  <i class="ti ti-thumb-down text-base"></i>
+                </button>
+                <button class="btn btn-ghost btn-xs rounded-full text-sm font-medium text-gray-400 ml-1">Vasta</button>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-xs btn-circle text-gray-600">
+              <i class="ti ti-dots-vertical text-base"></i>
+            </button>
+            <button
+              @click="deleteComment(c.id)"
+              class="btn btn-ghost btn-xs btn-circle text-gray-600 hover:text-red-400">
+              <i class="ti ti-trash text-base"></i>
+            </button>
+          </div>
+        </div>
+
+        <p v-if="!comments.length" class="text-sm text-gray-500">Puuduvad kommentaarid.</p>
+      </div>
+
     </div>
 
     <div class="w-full xl:w-[380px] shrink-0">
@@ -186,25 +246,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-defineProps({
-  video: {
-    type: Object,
-    required: true
-  },
-  recommended: {
-    type: Array,
-    default: () => []
-  },
-  liked: {
-    type: Boolean,
-    default: false
-  },
-  disliked: {
-    type: Boolean,
-    default: false
-  }
+const props = defineProps({
+  video: { type: Object, required: true },
+  recommended: { type: Array, default: () => [] },
+  liked: { type: Boolean, default: false },
+  disliked: { type: Boolean, default: false }
 })
 
 defineEmits(['select', 'toast', 'toggleLike', 'toggleDislike'])
@@ -220,6 +268,78 @@ const notifOptions = [
   { label: 'Personaliseeritud', value: 'personalized', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
   { label: 'Lülita välja', value: 'off', icon: 'M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.354 5.354l2.828 2.828.793-.793a2 2 0 00-2.828-2.828l-.793.793zm1.966 4.261l-2.828-2.828.793-.793a2 2 0 112.828 2.828l-.793.793zm4.243-1.242a2 2 0 00-2.828-2.828l-.793.793 2.828 2.828.793-.793z' }
 ]
+
+const comments = ref([])
+const newText = ref('')
+const composeFocused = ref(false)
+const posting = ref(false)
+
+watch(() => props.video, (v) => {
+  comments.value = v?.comments ? [...v.comments] : []
+}, { immediate: true })
+
+function avatarColor(name) {
+  const colors = ['#ef4444','#f97316','#f59e0b','#84cc16','#06b6d4','#3b82f6','#8b5cf6','#ec4899']
+  if (!name) return colors[0]
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return colors[Math.abs(hash) % colors.length]
+}
+
+function timeAgo(iso) {
+  if (!iso) return ''
+  const diff = Date.now() - new Date(iso).getTime()
+  const sec = Math.floor(diff / 1000)
+  if (sec < 10) return 'just now'
+  if (sec < 60) return `${sec}s`
+  const min = Math.floor(sec / 60)
+  if (min < 60) return `${min}m`
+  const hr = Math.floor(min / 60)
+  if (hr < 24) return `${hr}h`
+  return Math.floor(hr / 24) + 'd'
+}
+
+function toggleLike(id) {
+  const c = comments.value.find(x => x.id === id)
+  if (!c) return
+  c.liked = !c.liked
+  c.likes += c.liked ? 1 : -1
+}
+
+function cancelComment() {
+  newText.value = ''
+  composeFocused.value = false
+}
+
+async function postComment() {
+  if (!newText.value.trim()) return
+  posting.value = true
+  try {
+    const res = await fetch(`http://localhost:4000/api/videos/${props.video.id}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: newText.value.trim() })
+    })
+    if (!res.ok) throw new Error('Post failed')
+    const created = await res.json()
+    comments.value.unshift(created)
+    cancelComment()
+  } catch (e) {
+    console.error(e)
+  } finally {
+    posting.value = false
+  }
+}
+async function deleteComment(commentId) {
+  try {
+    await fetch(`http://localhost:4000/api/videos/${props.video.id}/comments/${commentId}`, {
+      method: 'DELETE'
+    })
+    comments.value = comments.value.filter(c => c.id !== commentId)
+  } catch (e) {
+    console.error(e)
+  }
+}
 </script>
 
 <style scoped>
