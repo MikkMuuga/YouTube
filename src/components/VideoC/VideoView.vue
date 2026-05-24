@@ -252,6 +252,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+const API = import.meta.env.VITE_API_URL
+
 const props = defineProps({
   video: { type: Object, required: true },
   recommended: { type: Array, required: true },
@@ -326,7 +328,7 @@ async function postComment() {
   if (!newText.value.trim()) return
   posting.value = true
   try {
-    const res = await fetch(`http://localhost:4000/api/videos/${props.video.id}/comments`, {
+    const res = await fetch(`${API}/api/videos/${props.video.id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ author: 'You', text: newText.value.trim() })

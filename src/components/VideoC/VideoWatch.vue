@@ -288,7 +288,7 @@ async function postComment() {
   if (!newText.value.trim()) return
   posting.value = true
   try {
-    const res = await fetch(`http://localhost:4000/api/videos/${props.video.id}/comments`, {
+    const res = await fetch(`${API}/api/videos/${props.video.id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: newText.value.trim() })
@@ -305,7 +305,7 @@ async function postComment() {
 }
 async function deleteComment(commentId) {
   try {
-    await fetch(`http://localhost:4000/api/videos/${props.video.id}/comments/${commentId}`, {
+    await fetch(`${API}/api/videos/${props.video.id}/comments/${commentId}`, {
       method: 'DELETE'
     })
     comments.value = comments.value.filter(c => c.id !== commentId)
