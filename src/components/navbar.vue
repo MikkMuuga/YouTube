@@ -1,9 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const searchQuery = ref('')
 const dropdownOpen = ref(false)
 const profileDropdownOpen = ref(false)
+const router = useRouter()
+const route = useRoute()
+
+watch(
+  () => route.query.search,
+  (value) => {
+    searchQuery.value = (value || '').toString()
+  },
+  { immediate: true }
+)
 
 const profile = {
   name: 'Mikk',
@@ -18,12 +29,11 @@ defineProps({
   }
 })
 
-defineEmits(['toggleSidebar'])
+defineEmits(['toggleSidebar', 'categoryChange'])
 
 const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    console.log('Searching for:', searchQuery.value)
-  }
+  const query = searchQuery.value.trim()
+  router.push({ path: '/', query: query ? { search: query } : {} })
 }
 
 const toggleDropdown = () => {
@@ -42,6 +52,13 @@ const closeDropdowns = () => {
   dropdownOpen.value = false
   profileDropdownOpen.value = false
 }
+const categories = [
+  'Kõik', 'Mängud', 'Muusika', 'Õpetlik', 'Otse', 'Komöödia',
+  'Sketšid', 'Platvormimängud', 'Märuliseiklusmängud', 'Animatsioon',
+  'Käsitöö', 'Loodus', 'Hiljuti üles laaditud', 'Vaadatud', 'Midagi teistsugust'
+]
+
+const activeCategory = ref('Kõik')
 </script>
 
 <template>
@@ -80,7 +97,7 @@ const closeDropdowns = () => {
             class="w-full bg-transparent py-2 outline-none text-white placeholder-gray-400"
           />
         </div>
-        <button class="bg-[#222222] border border-l-0 border-[#303030] px-5 py-2 rounded-r-full hover:bg-[#272727] transition">
+        <button @click="handleSearch" class="bg-[#222222] border border-l-0 border-[#303030] px-5 py-2 rounded-r-full hover:bg-[#272727] transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -204,4 +221,31 @@ const closeDropdowns = () => {
       </div>
     </div>
   </nav>
+    <div class="bg-[#0f0f0f] sticky top-14 z-40 px-4">
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-3">
+      <button
+        v-for="cat in categories"
+        :key="cat"
+        @click="activeCategory = cat; $emit('categoryChange', cat)"
+        class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+        :class="activeCategory === cat
+          ? 'bg-white text-black'
+          : 'bg-white/10 text-white hover:bg-white/20'"
+      >
+        {{ cat }}
+      </button>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
+

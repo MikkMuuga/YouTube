@@ -147,6 +147,88 @@ const getIcon = (name) => {
           <span>{{ item.label }}</span>
         </button>
       </div>
+
+      <div class="border-t border-white/10 my-3"></div>
+
+    <div class="px-3 space-y-1 text-sm text-white/80">
+        <p class="text-xs uppercase tracking-widest text-gray-400 px-3 py-2">Rohkem YouTube'ist</p>
+
+        <button class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-sm">
+          <span class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white shrink-0">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white">
+              <path
+                d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z" />
+            </svg>
+          </span>
+          <span>YouTube Premium</span>
+        </button>
+
+        <button class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-sm">
+          <span
+            class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white shrink-0 ring-2 ring-red-400">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="white">
+              <path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z" />
+            </svg>
+          </span>
+          <span>YouTube Music</span>
+        </button>
+
+        <button class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-sm">
+          <span class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white shrink-0">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white">
+              <path
+                d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z" />
+            </svg>
+          </span>
+          <span>YouTube Kids</span>
+        </button>
+      </div>
+
+      <div class="border-t border-white/10 my-3"></div>
+
+      <button
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-sm text-white/90">
+        <span class="w-8 h-8 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+            <line x1="4" y1="22" x2="4" y2="15" />
+          </svg>
+        </span>
+        <span>Teavituste ajalugu</span>
+      </button>
+
+      <div class="border-t border-white/10 my-3"></div>
+
+      <div class="px-3 pb-6 text-[11px] leading-5 text-white/60 space-y-2">
+        <div class="flex flex-wrap gap-1">
+          <a href="#" class="hover:text-white">Teave</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Press</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Autorõigused</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Võtke meiega ühendust</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Sisuloojad</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Reklaam</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Arendajad</a>
+        </div>
+        <div class="flex flex-wrap gap-1">
+          <a href="#" class="hover:text-white">Tingimused</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Privaatsus</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Eeskirjad ja ohutus</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Kuidas YouTube toimib?</a>
+          <span>·</span>
+          <a href="#" class="hover:text-white">Proovige uusi funktsioone</a>
+        </div>
+        <p class="text-xs text-white/40">© 2026 Google LLC</p>
+      </div>
       
       </div>
   </aside>

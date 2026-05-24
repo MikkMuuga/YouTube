@@ -7,9 +7,13 @@
 
     <div v-else-if="error" class="text-red-400 text-center py-20">{{ error }}</div>
 
+    <div v-else-if="!activeVideo && !loading && !error && filteredVideos.length === 0" class="text-center text-gray-300 py-20">
+      Ei leitud ühtegi videot otsingus "{{ searchQuery }}".
+    </div>
+
     <div v-else-if="!activeVideo" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       <VideoCard
-        v-for="video in videos"
+        v-for="video in filteredVideos"
         :key="video.id"
         :video="video"
         @select="openVideo"
@@ -50,14 +54,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import VideoCard from './VideoCard.vue'
 import VideoWatch from './VideoWatch.vue'
 import { fetchVideos } from './videos.js'
 import { useVideoPlayer } from './useVideoPlayer.js'
+import { defineProps } from 'vue'
 
 const videos = ref([])
 const loading = ref(true)
 const error = ref(null)
+const route = useRoute()
+
+const searchQuery = computed(() => (route.query.search || '').toString().trim())
 
 onMounted(async () => {
   try {
@@ -80,6 +89,14 @@ const {
   toggleLike,
   toggleDislike,
 } = useVideoPlayer()
+
+const props = defineProps({
+  activeCategory: { type: String, default: 'Kõik' }
+})
+const filteredVideos = computed(() => {
+  if (props.activeCategory === 'Kõik') return videos.value
+  return videos.value.filter(video => video.category === props.activeCategory)
+})
 
 const recommended = computed(() =>
   videos.value.filter(v => v.id !== activeVideo.value?.id)

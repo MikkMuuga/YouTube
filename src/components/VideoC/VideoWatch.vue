@@ -3,41 +3,12 @@
 
     <div class="flex-1 min-w-0">
 
-      <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden group/player">
-        <div class="w-full h-full flex flex-col items-center justify-center bg-[#111]">
-          <img
-            :src="video.thumbnail"
-            :alt="video.title"
-            class="absolute inset-0 w-full h-full object-cover opacity-30"
-          />
-          <div class="relative z-10 flex flex-col items-center gap-3">
-            <button
-              class="btn btn-circle btn-lg bg-black/60 border-0 hover:bg-black/80 transition-transform hover:scale-110"
-              @click="playing = !playing"
-            >
-              <svg v-if="!playing" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-            </button>
-            <span class="text-white/60 text-sm">{{ playing ? 'Mängib...' : 'Vajuta play' }}</span>
-          </div>
-        </div>
-
-        <div class="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-8 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity">
-          <div class="w-full h-1 bg-white/30 rounded-full mb-3 cursor-pointer" @click="$emit('toast', 'Edasta video!')">
-            <div class="h-full bg-red-500 rounded-full transition-all" :style="{ width: playing ? '35%' : '0%' }"></div>
-          </div>
-          <div class="flex items-center gap-3 text-white text-xs">
-            <button @click="playing = !playing">
-              <svg v-if="!playing" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-            </button>
-            <span class="tabular-nums">{{ playing ? '4:22' : '0:00' }} / {{ video.duration }}</span>
-            <div class="ml-auto flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-              <div class="w-16 h-1 bg-white/30 rounded-full"><div class="h-full w-3/4 bg-white rounded-full"></div></div>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white cursor-pointer" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-          </div>
+    <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
+        <iframe v-if="video.videoUrl" :src="video.videoUrl" class="w-full h-full" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+        <div v-else class="w-full h-full flex items-center justify-center text-gray-500 text-sm">
+          Video pole saadaval
         </div>
       </div>
 
@@ -268,6 +239,8 @@ const notifOptions = [
   { label: 'Personaliseeritud', value: 'personalized', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
   { label: 'Lülita välja', value: 'off', icon: 'M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.354 5.354l2.828 2.828.793-.793a2 2 0 00-2.828-2.828l-.793.793zm1.966 4.261l-2.828-2.828.793-.793a2 2 0 112.828 2.828l-.793.793zm4.243-1.242a2 2 0 00-2.828-2.828l-.793.793 2.828 2.828.793-.793z' }
 ]
+
+const activeCategory = ref('Kõik')
 
 const comments = ref([])
 const newText = ref('')

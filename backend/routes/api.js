@@ -30,11 +30,13 @@ router.get('/', async (req, res) => {
           channel: row.channel,
           channelAvatar: row.channel_avatar,
           thumbnail: row.thumbnail,
+          category: row.category,
           duration: row.duration,
           views: row.views,
           uploadedAt: row.uploaded_at,
           subscribers: row.subscribers,
           description: row.description,
+          videoUrl: row.video_url,
           comments: comments.map(c => ({ ...c, likes: 0, liked: false }))
         }
       })
