@@ -48,6 +48,18 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Andmebaasi viga' })
   }
 })
+router.get('/:id/comments', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      COMMENT_SELECT + 'WHERE c.video_id = ? ORDER BY c.created_at DESC',
+      [req.params.id]
+    )
+    res.json(rows.map(c => ({ ...c, likes: 0, liked: false })))
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Viga kommentaaride laadimisel' })
+  }
+})
 
 router.post('/:id/comments', express.json(), async (req, res) => {
   try {
@@ -84,5 +96,4 @@ router.delete('/:videoId/comments/:commentId', async (req, res) => {
     res.status(500).json({ error: 'Kustutamine ebaõnnestus' })
   }
 })
-
 module.exports = router

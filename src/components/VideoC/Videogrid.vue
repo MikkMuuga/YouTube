@@ -10,8 +10,7 @@
     <div v-else-if="!activeVideo && !loading && !error && filteredVideos.length === 0" class="text-center text-gray-300 py-20">
       Ei leitud ühtegi videot otsingus "{{ searchQuery }}".
     </div>
-
-    <div v-else-if="!activeVideo" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div v-else-if="!activeVideo" class="grid grid-cols-4 gap-x-4 gap-y-6">
       <VideoCard
         v-for="video in filteredVideos"
         :key="video.id"
@@ -94,8 +93,21 @@ const props = defineProps({
   activeCategory: { type: String, default: 'Kõik' }
 })
 const filteredVideos = computed(() => {
-  if (props.activeCategory === 'Kõik') return videos.value
-  return videos.value.filter(video => video.category === props.activeCategory)
+  let result = videos.value
+
+  if (props.activeCategory !== 'Kõik') {
+    result = result.filter(v => v.category === props.activeCategory)
+  }
+
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    result = result.filter(v =>
+      v.title?.toLowerCase().includes(q) ||
+      v.channel?.toLowerCase().includes(q)
+    )
+  }
+
+  return result
 })
 
 const recommended = computed(() =>

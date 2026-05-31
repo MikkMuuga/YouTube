@@ -4,7 +4,7 @@
       <img
         :src="video.thumbnail"
         :alt="video.title"
-        class="w-full h-56 object-cover group-hover:brightness-75 transition"
+        class="w-full h-40 object-cover group-hover:brightness-75 transition"
       />
       <span class="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded text-xs font-semibold text-white">
         {{ video.duration }}

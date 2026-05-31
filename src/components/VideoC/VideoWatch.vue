@@ -233,6 +233,7 @@ const subscribed = ref(false)
 const notifPref = ref('all')
 const saved = ref(false)
 const descExpanded = ref(false)
+const API = 'http://localhost:4000'
 
 const notifOptions = [
   { label: 'Lasku kõik', value: 'all', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
@@ -294,8 +295,7 @@ async function postComment() {
       body: JSON.stringify({ text: newText.value.trim() })
     })
     if (!res.ok) throw new Error('Post failed')
-    const created = await res.json()
-    comments.value.unshift(created)
+    await fetchComments()
     cancelComment()
   } catch (e) {
     console.error(e)
@@ -313,6 +313,12 @@ async function deleteComment(commentId) {
     console.error(e)
   }
 }
+async function fetchComments() {
+  const res = await fetch(`${API}/api/videos/${props.video.id}/comments`)
+  const data = await res.json()
+  comments.value = data
+}
+
 </script>
 
 <style scoped>

@@ -15,10 +15,10 @@ const mainItems = [
 ]
 
 const subscriptions = [
-  { name: 'Viva La Dirt Leag...', color: 'bg-teal-500', hasUpdate: true },
-  { name: 'Venttu', color: 'bg-orange-400', hasUpdate: true },
-  { name: 'NileBlue', color: 'bg-blue-500', hasUpdate: false },
-  { name: 'Jaden Williams', color: 'bg-red-400', hasUpdate: true },
+  { name: 'Viva La Dirt League', avatar: 'https://yt3.googleusercontent.com/ytc/AIdro_kTqsz6Fd075zkLMJ5cAoGaC9DEwOmKqui5U3xp0Zb_NZY=s160-c-k-c0x00ffffff-no-rj', hasUpdate: true },
+  { name: 'edmondx', avatar: 'https://yt3.googleusercontent.com/eRO1fTTwR0Ddvf4bysPP2KHyoXYu5Yy6ymj-4xfNwLbrpQ4UA5XKEBr4Yh7Y5k4Ujiny2nBW=s160-c-k-c0x00ffffff-no-rj', hasUpdate: true },
+  { name: 'NileBlue', avatar: 'https://yt3.googleusercontent.com/4BtodIdSmUGnI60u8Mmau3nu6xYF_0kVOwTvpMfsY3VfZsw40_XBBkmIDTppwekt1gmaRJ7v=s160-c-k-c0x00ffffff-no-rj', hasUpdate: false },
+  { name: 'Jaden Williams', avatar: 'https://yt3.googleusercontent.com/Gtk-7feBEyXzjWJOf_NLUZxhcolX79csPMAmuoV0FHOUeCnPl6_XdHkhvcPTTBa-QjwfHh_SmQ=s160-c-k-c0x00ffffff-no-rj', hasUpdate: true },
 ]
 
 const yourItems = [
@@ -89,7 +89,7 @@ const getIcon = (name) => {
           :key="sub.name"
           class="w-full flex items-center gap-4 px-3 py-2 hover:bg-white/10 rounded-xl text-sm transition-colors group"
         >
-          <div :class="['w-6 h-6 rounded-full shrink-0', sub.color]"></div>
+          <img :src="sub.avatar" :alt="sub.name" class="w-6 h-6 rounded-full shrink-0 object-cover" />
           <span class="flex-1 text-left truncate">{{ sub.name }}</span>
           <div v-if="sub.hasUpdate" class="w-1 h-1 bg-blue-500 rounded-full"></div>
         </button>
